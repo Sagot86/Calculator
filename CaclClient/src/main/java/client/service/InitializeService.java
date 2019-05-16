@@ -7,6 +7,7 @@ import client.model.JsonConverterNTransporter;
 import client.model.Operation;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 public class InitializeService {
@@ -36,6 +37,11 @@ public class InitializeService {
             idCount = history.get(history.size() - 1).getId() + 1;
             firstCount = idCount;
         }
+    }
+
+    public List<String> getHistory() {
+        List<HistoryUnit> history = jcNt.loadHistory();
+        return unitToString(history);
     }
 
     public void calculate() {
@@ -103,14 +109,22 @@ public class InitializeService {
     }
 
 
-    public void printFromDB() {
+    public List<String> unitToString(List<HistoryUnit> units) {
 
-        List<HistoryUnit> testList = dbWorker.getData();
+        List<String> testList = new ArrayList<>();
 
-        for (HistoryUnit hu2d : testList) {
-            printResult(hu2d);
+        for (HistoryUnit unit : units) {
+            testList.add(
+                            unit.getInitVal() +
+                            " " +
+                            unit.getOperation().getSymbol() +
+                            " " +
+                            unit.getOpVal() +
+                            " = " +
+                            unit.getFinVal()
+            );
         }
-
+        return testList;
     }
 
     public void inAppEnd() {

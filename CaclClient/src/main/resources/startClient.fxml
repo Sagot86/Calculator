@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+
+<AnchorPane prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: EAE1D4;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.MainFXMLController">
+   <children>
+      <TextArea fx:id="historyWindow" layoutX="438.0" layoutY="83.0" prefHeight="378.0" prefWidth="248.0" />
+      <Text layoutX="469.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Operations history" wrappingWidth="186.5927734375">
+         <font>
+            <Font name="Pristina" size="32.0" />
+         </font>
+      </Text>
+      <TextField layoutX="21.0" layoutY="14.0" prefHeight="51.0" prefWidth="340.0" />
+      <Button onAction="#loadHist" fx:id="loadHistButton" layoutX="606.0" layoutY="467.0" mnemonicParsing="false" text="LoadHistory" />
+      <Button onAction="#clearHist" fx:id="clearHistButton" layoutX="522.0" layoutY="467.0" mnemonicParsing="false" text="ClearHistory" />
+   </children>
+</AnchorPane>
