@@ -8,11 +8,8 @@ public class Calculator {
     public Calculator() {
     }
 
-    public HistoryUnit calculate(HistoryUnit historyUnit) {
-
-        historyUnit.setFinVal(calculateOne(historyUnit));
-        return historyUnit;
-
+    public BigDecimal calculate(HistoryUnit historyUnit) {
+        return calculateOne(historyUnit);
     }
 
     private BigDecimal calculateOne(HistoryUnit historyUnit) throws ArithmeticException {

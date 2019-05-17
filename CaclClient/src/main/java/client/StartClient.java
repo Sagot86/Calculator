@@ -13,23 +13,19 @@ import java.net.URL;
 
 public class StartClient extends Application {
 
+    /** ужасно, переделать позже */
+    private InitializeService service = new InitializeService();
+
     public static void main(String[] args) {
-
-        InitializeService service = new InitializeService();
-
-/*        service.onAppStart();
-
-        service.calculate();
-
-        System.out.println("CURRENT IN DB");
-        service.printFromDB();
-
-        service.inAppEnd();*/
-
         StartClient.launch(args);
-
     }
 
+    @Override
+    public void init() throws Exception {
+        super.init();
+        service.onAppStart();
+
+    }
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -44,5 +40,11 @@ public class StartClient extends Application {
 
         stage.show();
 
+    }
+
+    @Override
+    public void stop() throws Exception {
+        service.onAppStop();
+        super.stop();
     }
 }

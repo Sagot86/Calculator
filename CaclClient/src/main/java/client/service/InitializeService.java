@@ -15,40 +15,28 @@ public class InitializeService {
     private final H2DBWorker dbWorker = new H2DBWorker();
     private final JsonConverterNTransporter jcNt = new JsonConverterNTransporter();
     private final Calculator calculator = new Calculator();
+    private HistoryUnit unitForCalc = new HistoryUnit();
     private long idCount;
     private long firstCount;
 
     public void onAppStart() {
-        //Создание inmemory таблицы
+
+        /* Create inmemoryDB */
         dbWorker.createTable();
 
-        //проверка БД на сервере на наличие содержимого
-        if (jcNt.dbIsntEmpty()) {
+        //Присвоение значений счетчикам
+        idCount = jcNt.getLastID() + 1;
+        firstCount = idCount;
 
-            //Подгрузка посделних пятнадцати записей с сервера
-            List<HistoryUnit> history = jcNt.loadHistory();
-            System.out.println("HISTORY:");
-            //Вывод подгруженных записей на экран
-            for (HistoryUnit hu : history) {
-                printResult(hu);
-            }
-            System.out.println("HISTORY END");
-            //Вычисление стартового ID и IDcount
-            idCount = history.get(history.size() - 1).getId() + 1;
-            firstCount = idCount;
-        }
     }
 
+    /** Load history from server DB % convert to List<String> */
     public List<String> getHistory() {
         List<HistoryUnit> history = jcNt.loadHistory();
         return unitToString(history);
     }
 
     public void calculate() {
-
-        //Новый юнит для записи
-        HistoryUnit unitForCalc = new HistoryUnit();
-
         //Ставим ID
         unitForCalc.setId(idCount);
 
@@ -64,14 +52,14 @@ public class InitializeService {
         //Произвести рассчет
 
         try {
-            unitForCalc = calculator.calculate(unitForCalc);
+            unitForCalc.setFinVal(calculator.calculate(unitForCalc));
         } catch (ArithmeticException ex) {
             System.out.println("Здесь на ноль делить нельзя!");
             return;
         }
 
         //Вывод строки на печать в окно консоли
-        printResult(unitForCalc);
+
         dbWorker.saveData(unitForCalc);
         idCount++;
 
@@ -83,6 +71,7 @@ public class InitializeService {
         }
     }
 
+
     private String getStringNumber() {
         //В этом методе формируется строка из нажатий кнопок на калькуляторе, пока заглушка, возвращающая одно число.
         return "5";
@@ -92,30 +81,12 @@ public class InitializeService {
         return new BigDecimal(inputNum);
     }
 
-    private void printResult(HistoryUnit historyUnit) {
-
-        String unitToPrint = historyUnit.getId() +
-                " " +
-                historyUnit.getInitVal() +
-                " " +
-                historyUnit.getOperation().getSymbol() +
-                " " +
-                historyUnit.getOpVal() +
-                " = " +
-                historyUnit.getFinVal();
-
-        System.out.println(unitToPrint);
-
-    }
-
-
-    public List<String> unitToString(List<HistoryUnit> units) {
-
+    /** Conversion List<HistoryUnit> to List<String> */
+    private List<String> unitToString(List<HistoryUnit> units) {
         List<String> testList = new ArrayList<>();
-
         for (HistoryUnit unit : units) {
             testList.add(
-                            unit.getInitVal() +
+                    unit.getInitVal() +
                             " " +
                             unit.getOperation().getSymbol() +
                             " " +
@@ -127,7 +98,19 @@ public class InitializeService {
         return testList;
     }
 
-    public void inAppEnd() {
+    /** Conversion HistoryUnit to String */
+    private String unitToString(HistoryUnit unit) {
+        return
+                unit.getInitVal() +
+                " " +
+                unit.getOperation().getSymbol() +
+                " " +
+                unit.getOpVal() +
+                " = " +
+                unit.getFinVal();
+    }
+
+    public void onAppStop() {
         //выгрузка оставшихся записей из памяти в основную базу
         jcNt.uploadHistory(dbWorker.getData());
     }

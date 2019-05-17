@@ -6,7 +6,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 
-
 import java.util.List;
 
 public class MainFXMLController {
@@ -25,7 +24,7 @@ public class MainFXMLController {
     @FXML
     private void loadHist(ActionEvent event) {
         List<String> toPrint = initializeService.getHistory();
-        for (String string: toPrint) {
+        for (String string : toPrint) {
             historyWindow.appendText(string + "\n");
         }
     }
@@ -33,6 +32,14 @@ public class MainFXMLController {
     @FXML
     private void clearHist(ActionEvent event) {
         historyWindow.clear();
+    }
+
+    @FXML
+    private void initialize() {
+        List<String> toPrint = initializeService.getHistory();
+        for (String string : toPrint) {
+            historyWindow.appendText(string + "\n");
+        }
     }
 
 }

@@ -46,13 +46,14 @@ public class JsonConverterNTransporter {
             }
         }
 
-        public boolean dbIsntEmpty() {
+        public Long getLastID() {
             try {
                 URL url = new URL(getID);
-                return mapper.readValue(url, Long.class) > 0;
+                return mapper.readValue(url, Long.class);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return false;
+            return 0L;
         }
+
 }
