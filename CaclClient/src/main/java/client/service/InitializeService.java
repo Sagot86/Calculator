@@ -16,8 +16,8 @@ public class InitializeService {
     private final H2DBWorker dbWorker = new H2DBWorker();
     private final JsonConverterNTransporter jcNt = new JsonConverterNTransporter();
     private final Calculator calculator = new Calculator();
-    private HistoryUnit unitForCalc = new HistoryUnit();
-    private BigDecimal zeroNum = new BigDecimal(0);
+    private final HistoryUnit unitForCalc = new HistoryUnit();
+    private final BigDecimal zeroNum = new BigDecimal(0);
     private long idCount;
     private long firstCount;
     private StringBuilder stringForCalc = new StringBuilder();
@@ -62,7 +62,7 @@ public class InitializeService {
      * Обработка в случае нажатия символа операции
      */
     public String getInputValue(Operation operation) {
-        if (!operation.equals(Operation.EQUAL) && unitForCalc.getOperation() == null) {
+        if (!operation.equals(Operation.EQUAL) && unitForCalc.getOperation() == null && stringForCalc.length() > 0) {
             unitForCalc.setInitVal(new BigDecimal(stringForCalc.toString()));
             unitForCalc.setOperation(operation);
             clearSB();
@@ -70,7 +70,14 @@ public class InitializeService {
         } else if (unitForCalc.getOperation() == null && unitForCalc.getInitVal() == null && stringForCalc.length() == 0) {
             unitForCalc.setInitVal(zeroNum);
             unitForCalc.setOperation(operation);
-            return buildString(" ");
+            return buildString("");
+        } else if (unitForCalc.getInitVal() != null && unitForCalc.getOpVal() == null && stringForCalc.length() == 0) {
+            unitForCalc.setOperation(operation);
+            return buildString("");
+        } else if (unitForCalc.getInitVal() != null && unitForCalc.getOperation() !=null && unitForCalc.getOpVal() == null && stringForCalc.length() == 0) {
+
+            //Посмотреть тут
+            return calculate();
         } else {
             unitForCalc.setOpVal(new BigDecimal(stringForCalc.toString()));
             return calculate();
@@ -85,7 +92,6 @@ public class InitializeService {
                         unitForCalc.getOperation().getSymbol() +
                         stringForCalc.append(string).toString());
     }
-
 
     private String calculate() {
         //Ставим ID
@@ -113,11 +119,14 @@ public class InitializeService {
 
         String forReturn = unitToString(unitForCalc);
 
-        clearUnitForCalc();
+
         clearSB();
+        unitForCalc.setInitVal(unitForCalc.getFinVal());
+        unitForCalc.setOperation(null);
+        unitForCalc.setOpVal(null);
+        unitForCalc.setFinVal(null);
 
         return forReturn;
-
     }
 
     /**
@@ -159,9 +168,9 @@ public class InitializeService {
     }
 
     public void clearUnitForCalc() {
-        unitForCalc.setInitVal(zeroNum);
+        unitForCalc.setInitVal(null);
         unitForCalc.setOperation(null);
-        unitForCalc.setOpVal(zeroNum);
+        unitForCalc.setOpVal(null);
     }
 
     public void onAppStop() {

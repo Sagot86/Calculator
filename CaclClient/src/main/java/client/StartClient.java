@@ -35,9 +35,7 @@ public class StartClient extends Application {
         Scene scene = new Scene(root);
 
         stage.setScene(scene);
-
         stage.setTitle("Calculator");
-
         stage.show();
 
     }

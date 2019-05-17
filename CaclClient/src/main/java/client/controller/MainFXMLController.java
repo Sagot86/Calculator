@@ -166,7 +166,6 @@ public class MainFXMLController {
         historyWindow.clear();
     }
 
-
     @FXML
     private void initialize() {
         List<String> toPrint = initializeService.getHistory();
