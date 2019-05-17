@@ -10,57 +10,98 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class InitializeService {
 
     private final H2DBWorker dbWorker = new H2DBWorker();
     private final JsonConverterNTransporter jcNt = new JsonConverterNTransporter();
     private final Calculator calculator = new Calculator();
     private HistoryUnit unitForCalc = new HistoryUnit();
+    private BigDecimal zeroNum = new BigDecimal(0);
     private long idCount;
     private long firstCount;
+    private StringBuilder stringForCalc = new StringBuilder();
 
     public void onAppStart() {
-
         /* Create inmemoryDB */
         dbWorker.createTable();
-
         //Присвоение значений счетчикам
         idCount = jcNt.getLastID() + 1;
         firstCount = idCount;
-
     }
 
-    /** Load history from server DB % convert to List<String> */
+    /**
+     * Load history from server DB & convert to List<String>
+     */
     public List<String> getHistory() {
         List<HistoryUnit> history = jcNt.loadHistory();
         return unitToString(history);
     }
 
-    public void calculate() {
+    /**
+     * Обработка в случае нажатия цифры или точки
+     */
+    public String getInputValue(String s) {
+        if (!s.equals(".") || hasNoDot()) {
+            return buildString(s);
+        }
+        return buildString("");
+    }
+
+    /**
+     * Проверка на наличие уже введенной точки
+     */
+    private boolean hasNoDot() {
+        for (int i = 0; i < stringForCalc.length(); i++) {
+            if (stringForCalc.charAt(i) == '.') return false;
+        }
+        return true;
+    }
+
+    /**
+     * Обработка в случае нажатия символа операции
+     */
+    public String getInputValue(Operation operation) {
+        if (!operation.equals(Operation.EQUAL) && unitForCalc.getOperation() == null) {
+            unitForCalc.setInitVal(new BigDecimal(stringForCalc.toString()));
+            unitForCalc.setOperation(operation);
+            clearSB();
+            return buildString("");
+        } else if (unitForCalc.getOperation() == null && unitForCalc.getInitVal() == null && stringForCalc.length() == 0) {
+            unitForCalc.setInitVal(zeroNum);
+            unitForCalc.setOperation(operation);
+            return buildString(" ");
+        } else {
+            unitForCalc.setOpVal(new BigDecimal(stringForCalc.toString()));
+            return calculate();
+        }
+    }
+
+    private String buildString(String string) {
+        if (unitForCalc.getOperation() == null) {
+            return stringForCalc.append(string).toString();
+        } else return (
+                unitForCalc.getInitVal().toString() +
+                        unitForCalc.getOperation().getSymbol() +
+                        stringForCalc.append(string).toString());
+    }
+
+
+    private String calculate() {
         //Ставим ID
         unitForCalc.setId(idCount);
 
-        //Вычислить начальное значение
-        unitForCalc.setInitVal(getNumber(getStringNumber()));
-
-        //Вычислить знак
-        unitForCalc.setOperation(Operation.DIVISION);
-
-        //Вычислить второе значение в выражении
-        unitForCalc.setOpVal(getNumber("0"));
-
         //Произвести рассчет
-
         try {
             unitForCalc.setFinVal(calculator.calculate(unitForCalc));
         } catch (ArithmeticException ex) {
-            System.out.println("Здесь на ноль делить нельзя!");
-            return;
+            return "Здесь на ноль делить нельзя!";
         }
 
-        //Вывод строки на печать в окно консоли
-
+        //Сохраняем значение unitForCalc в DB
         dbWorker.saveData(unitForCalc);
+
+        //Increment count
         idCount++;
 
         //Выгрузка записей в основную базу в случае, если в памяти их больше пятидесяти.
@@ -69,19 +110,19 @@ public class InitializeService {
             dbWorker.clearData(firstCount, idCount);
             firstCount = idCount;
         }
+
+        String forReturn = unitToString(unitForCalc);
+
+        clearUnitForCalc();
+        clearSB();
+
+        return forReturn;
+
     }
 
-
-    private String getStringNumber() {
-        //В этом методе формируется строка из нажатий кнопок на калькуляторе, пока заглушка, возвращающая одно число.
-        return "5";
-    }
-
-    private BigDecimal getNumber(String inputNum) {
-        return new BigDecimal(inputNum);
-    }
-
-    /** Conversion List<HistoryUnit> to List<String> */
+    /**
+     * Conversion List<HistoryUnit> to List<String>
+     */
     private List<String> unitToString(List<HistoryUnit> units) {
         List<String> testList = new ArrayList<>();
         for (HistoryUnit unit : units) {
@@ -98,16 +139,29 @@ public class InitializeService {
         return testList;
     }
 
-    /** Conversion HistoryUnit to String */
+    /**
+     * Conversion HistoryUnit to String
+     */
+
     private String unitToString(HistoryUnit unit) {
         return
                 unit.getInitVal() +
-                " " +
-                unit.getOperation().getSymbol() +
-                " " +
-                unit.getOpVal() +
-                " = " +
-                unit.getFinVal();
+                        " " +
+                        unit.getOperation().getSymbol() +
+                        " " +
+                        unit.getOpVal() +
+                        " = " +
+                        unit.getFinVal();
+    }
+
+    public void clearSB() {
+        stringForCalc.setLength(0);
+    }
+
+    public void clearUnitForCalc() {
+        unitForCalc.setInitVal(zeroNum);
+        unitForCalc.setOperation(null);
+        unitForCalc.setOpVal(zeroNum);
     }
 
     public void onAppStop() {

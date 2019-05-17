@@ -2,11 +2,11 @@ package client.model;
 
 public enum Operation {
 
-    ADDITION("+"),
-    SUBTRACTION("-"),
-    MULTIPLICATION("*"),
-    DIVISION("/"),
-    EQUAL("=");
+    ADDITION(" + "),
+    SUBTRACTION(" - "),
+    MULTIPLICATION(" x "),
+    DIVISION(" / "),
+    EQUAL(" = ");
 
     private final String symbol;
 
