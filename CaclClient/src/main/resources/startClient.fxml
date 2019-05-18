@@ -13,10 +13,10 @@
 
 <AnchorPane prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: EAE1D4;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.MainFXMLController">
    <children>
-      <TextArea fx:id="historyWindow" editable="false" layoutX="438.0" layoutY="83.0" prefHeight="378.0" prefWidth="248.0" />
-      <Text layoutX="469.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Operations history" wrappingWidth="186.5927734375">
+      <TextArea fx:id="historyWindow" editable="false" layoutX="438.0" layoutY="65.0" prefHeight="396.0" prefWidth="248.0" />
+      <Text layoutX="493.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Operations history" wrappingWidth="186.5927734375">
          <font>
-            <Font name="Pristina" size="32.0" />
+            <Font name="Berlin Sans FB" size="22.0" />
          </font>
       </Text>
       <TextField fx:id="display" alignment="CENTER_RIGHT" layoutX="21.0" layoutY="14.0" prefHeight="51.0" prefWidth="380.0">
@@ -126,7 +126,7 @@
             <Insets />
          </opaqueInsets>
       </GridPane>
-      <Button fx:id="cancelButton" layoutX="420.0" layoutY="20.0" mnemonicParsing="false" onAction="#pressCancel" prefHeight="38.0" prefWidth="35.0" text="C">
+      <Button fx:id="cancelButton" layoutX="438.0" layoutY="13.0" mnemonicParsing="false" onAction="#pressCancel" prefHeight="38.0" prefWidth="35.0" text="C">
          <font>
             <Font size="18.0" />
          </font>

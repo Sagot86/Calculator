@@ -11,16 +11,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class InitializeService {
+public class CalculatorService {
 
     private final H2DBWorker dbWorker = new H2DBWorker();
     private final JsonConverterNTransporter jcNt = new JsonConverterNTransporter();
     private final Calculator calculator = new Calculator();
+
     private final HistoryUnit unitForCalc = new HistoryUnit();
     private final BigDecimal zeroNum = new BigDecimal(0);
+    private StringBuilder stringForCalc = new StringBuilder();
+
     private long idCount;
     private long firstCount;
-    private StringBuilder stringForCalc = new StringBuilder();
+
+    private boolean shouldPring = false;
+    private String toHistPrint;
 
     public void onAppStart() {
         /* Create inmemoryDB */
@@ -43,7 +48,9 @@ public class InitializeService {
      */
     public String getInputValue(String s) {
         if (!s.equals(".") || hasNoDot()) {
-            return buildString(s);
+            if (s.equals(".") && stringForCalc.length() == 0) {
+                return buildString("0" + s);
+            } else return buildString(s);
         }
         return buildString("");
     }
@@ -63,24 +70,39 @@ public class InitializeService {
      */
     public String getInputValue(Operation operation) {
         if (!operation.equals(Operation.EQUAL) && unitForCalc.getOperation() == null && stringForCalc.length() > 0) {
+            System.out.println("Операция не равно, поле операции еще не заполнено, символы уже вводились");
             unitForCalc.setInitVal(new BigDecimal(stringForCalc.toString()));
             unitForCalc.setOperation(operation);
             clearSB();
             return buildString("");
-        } else if (unitForCalc.getOperation() == null && unitForCalc.getInitVal() == null && stringForCalc.length() == 0) {
+        } else if (unitForCalc.getInitVal() == null && unitForCalc.getOperation() == null && stringForCalc.length() == 0) {
+            System.out.println("Начальное значение не заполнено, поле операции еще не заполнено, символов еще не вводилось");
             unitForCalc.setInitVal(zeroNum);
             unitForCalc.setOperation(operation);
             return buildString("");
         } else if (unitForCalc.getInitVal() != null && unitForCalc.getOpVal() == null && stringForCalc.length() == 0) {
+            System.out.println("Начальное значение уже есть, второго значения еще нет, символы еще не вводились");
             unitForCalc.setOperation(operation);
             return buildString("");
-        } else if (unitForCalc.getInitVal() != null && unitForCalc.getOperation() !=null && unitForCalc.getOpVal() == null && stringForCalc.length() == 0) {
-
-            //Посмотреть тут
-            return calculate();
-        } else {
+        } else if (!operation.equals(Operation.EQUAL) && unitForCalc.getInitVal() != null && unitForCalc.getOperation() != null && unitForCalc.getOpVal() == null && stringForCalc.length() > 0) {
+            System.out.println("Начальное значение уже есть, поле операции уже заполнено, второго значения еще нет, символы уже вводились, знак не равно");
             unitForCalc.setOpVal(new BigDecimal(stringForCalc.toString()));
-            return calculate();
+            calculate();
+            unitForCalc.setOperation(operation);
+            return buildString("");
+        } else if (operation.equals(Operation.EQUAL)) {
+            if (unitForCalc.getOpVal() == null && stringForCalc.length() == 0) {
+                unitForCalc.setOperation(null);
+                return buildString("");
+            } else {
+                System.out.println("Пришедшая операция - равно");
+                unitForCalc.setOpVal(new BigDecimal(stringForCalc.toString()));
+                return calculate();
+            }
+        } else {
+            System.out.println("Все остальное");
+            unitForCalc.setOperation(operation);
+            return buildString("");
         }
     }
 
@@ -101,6 +123,8 @@ public class InitializeService {
         try {
             unitForCalc.setFinVal(calculator.calculate(unitForCalc));
         } catch (ArithmeticException ex) {
+            clearUnitForCalc();
+            clearSB();
             return "Здесь на ноль делить нельзя!";
         }
 
@@ -118,7 +142,8 @@ public class InitializeService {
         }
 
         String forReturn = unitToString(unitForCalc);
-
+        toHistPrint = forReturn;
+        shouldPring = true;
 
         clearSB();
         unitForCalc.setInitVal(unitForCalc.getFinVal());
@@ -176,6 +201,18 @@ public class InitializeService {
     public void onAppStop() {
         //выгрузка оставшихся записей из памяти в основную базу
         jcNt.uploadHistory(dbWorker.getData());
+    }
+
+    public boolean checkFin() {
+        return shouldPring;
+    }
+
+    public void setShouldPringFalse() {
+        shouldPring = false;
+    }
+
+    public String getStr() {
+        return (toHistPrint + "\n");
     }
 
 }

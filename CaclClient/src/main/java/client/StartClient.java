@@ -1,6 +1,6 @@
 package client;
 
-import client.service.InitializeService;
+import client.service.CalculatorService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,7 +14,7 @@ import java.net.URL;
 public class StartClient extends Application {
 
     /** ужасно, переделать позже */
-    private InitializeService service = new InitializeService();
+    private CalculatorService service = new CalculatorService();
 
     public static void main(String[] args) {
         StartClient.launch(args);
