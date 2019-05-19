@@ -7,6 +7,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 import java.util.List;
 
@@ -156,7 +158,7 @@ public class MainFXMLController {
 
     @FXML
     private void pressCancel(ActionEvent event) {
-        calculatorService.clearSB ();
+        calculatorService.clearSB();
         calculatorService.clearUnitForCalc();
         display.setText("0");
     }
@@ -164,6 +166,73 @@ public class MainFXMLController {
     @FXML
     private void clearHist(ActionEvent event) {
         historyWindow.clear();
+    }
+
+    @FXML
+    private void keyPressedEvent(KeyEvent event) {
+        switch (event.getCode()) {
+            case PERIOD:
+                pressButton(".");
+                break;
+            case DIGIT0:
+            case NUMPAD0:
+                pressButton("0");
+                break;
+            case DIGIT1:
+            case NUMPAD1:
+                pressButton("1");
+                break;
+            case DIGIT2:
+            case NUMPAD2:
+                pressButton("2");
+                break;
+            case DIGIT3:
+            case NUMPAD3:
+                pressButton("3");
+                break;
+            case DIGIT4:
+            case NUMPAD4:
+                pressButton("4");
+                break;
+            case DIGIT5:
+            case NUMPAD5:
+                pressButton("5");
+                break;
+            case DIGIT6:
+            case NUMPAD6:
+                pressButton("6");
+                break;
+            case DIGIT7:
+            case NUMPAD7:
+                pressButton("7");
+                break;
+            case DIGIT8:
+            case NUMPAD8:
+                pressButton("8");
+                break;
+            case DIGIT9:
+            case NUMPAD9:
+                pressButton("9");
+                break;
+            case DIVIDE:
+                pressOperationButton(Operation.DIVISION);
+                break;
+            case MULTIPLY:
+                pressOperationButton(Operation.MULTIPLICATION);
+                break;
+            case SUBTRACT:
+            case MINUS:
+                pressOperationButton(Operation.SUBTRACTION);
+                break;
+            case ADD:
+            case PLUS:
+                pressOperationButton(Operation.ADDITION);
+                break;
+            case EQUALS:
+            case ENTER:
+                pressOperationButton(Operation.EQUAL);
+                break;
+        }
     }
 
     @FXML
@@ -190,5 +259,7 @@ public class MainFXMLController {
     private void pressButton(String string) {
         display.setText(calculatorService.getInputValue(string));
     }
+
+
 
 }
