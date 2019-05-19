@@ -17,11 +17,6 @@ public class HUController {
         return historyUnitService.getLastFifteen();
     }
 
-    @GetMapping("/lastid")
-    public Long getLastID() {
-        return historyUnitService.getLastID();
-    }
-
     @PostMapping()
     public void saveRecords(@RequestBody List<HistoryUnit> historyUnitList) {
         historyUnitService.save(historyUnitList);

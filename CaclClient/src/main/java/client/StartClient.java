@@ -5,10 +5,8 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
-import java.beans.EventHandler;
 import java.io.File;
 import java.net.URL;
 
@@ -16,7 +14,7 @@ import java.net.URL;
 public class StartClient extends Application {
 
     /** ужасно, переделать позже */
-    private CalculatorService service = new CalculatorService();
+    private CalculatorService service = new CalculatorService(null);
 
     public static void main(String[] args) {
         StartClient.launch(args);

@@ -7,9 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class StartServer {
 
     public static void main(String[] args) {
-
         SpringApplication.run(StartServer.class, args);
-
     }
-
 }

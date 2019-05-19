@@ -20,7 +20,4 @@ public class HistoryUnitService {
         return historyUnitDAO.getLastFifteen();
     }
 
-    public Long getLastID() {
-        return historyUnitDAO.getLastID();
-    }
 }

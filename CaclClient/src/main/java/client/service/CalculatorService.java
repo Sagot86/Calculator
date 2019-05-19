@@ -1,5 +1,6 @@
 package client.service;
 
+import client.controller.UpdateHistoryListener;
 import client.dao.H2DBWorker;
 import client.model.Calculator;
 import client.model.HistoryUnit;
@@ -10,21 +11,21 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class CalculatorService {
 
     private final H2DBWorker dbWorker = new H2DBWorker();
     private final JsonConverterNTransporter jcNt = new JsonConverterNTransporter();
     private final Calculator calculator = new Calculator();
+    private final UpdateHistoryListener listener;
 
     private final HistoryUnit unitForCalc = new HistoryUnit();
-    private final BigDecimal zeroNum = new BigDecimal(0);
     private StringBuilder stringForCalc = new StringBuilder();
 
     private long idCount;
 
-    private boolean shouldPrint = false;
-    private String toHistPrint;
+    public CalculatorService(UpdateHistoryListener listener) {
+        this.listener = listener;
+    }
 
     public void onAppStart() {
         /* Create inmemoryDB */
@@ -43,24 +44,23 @@ public class CalculatorService {
     /**
      * Обработка в случае нажатия цифры или точки
      */
-    public String getInputValue(String s) {
-        if (!s.equals(".") || hasNoDot()) {
-            if (s.equals(".") && stringForCalc.length() == 0) {
-                return buildString("0" + s);
-            } else return buildString(s);
+    public String processValue(String s) {
+            return buildString(s);
+    }
+
+    /**
+     * Обработка в случае нажатия точки
+     */
+    public String processDot(String dot) {
+        if (stringForCalc.length() == 0) {
+            return buildString("0" + dot);
+        }
+        if (stringForCalc.indexOf(".") == -1) {
+            return buildString(dot);
         }
         return buildString("");
     }
 
-    /**
-     * Проверка на наличие уже введенной точки
-     */
-    private boolean hasNoDot() {
-        for (int i = 0; i < stringForCalc.length(); i++) {
-            if (stringForCalc.charAt(i) == '.') return false;
-        }
-        return true;
-    }
 
     /**
      * Обработка в случае нажатия символа операции
@@ -74,7 +74,7 @@ public class CalculatorService {
             return buildString("");
         } else if (unitForCalc.getInitVal() == null && unitForCalc.getOperation() == null && stringForCalc.length() == 0) {
             System.out.println("Начальное значение не заполнено, поле операции еще не заполнено, символов еще не вводилось");
-            unitForCalc.setInitVal(zeroNum);
+            unitForCalc.setInitVal(BigDecimal.ZERO);
             unitForCalc.setOperation(operation);
             return buildString("");
         } else if (unitForCalc.getInitVal() != null && unitForCalc.getOpVal() == null && stringForCalc.length() == 0) {
@@ -129,8 +129,8 @@ public class CalculatorService {
         //Increment count
         idCount++;
 
-        //Выгрузка записей в основную базу в случае, если в памяти их больше пятидесяти.
-        if (idCount > 20) {
+        //Выгрузка записей в основную базу в случае, если в памяти их больше тридцати.
+        if (idCount > 30) {
             jcNt.uploadHistory(dbWorker.getData());
             dbWorker.clearData(idCount);
             idCount = 0;
@@ -139,10 +139,9 @@ public class CalculatorService {
         /* Сохраняем стринг для печати на экран */
         String forReturn = unitToString(unitForCalc);
 
-        /* А вот тут костыль для вывода печати в поле истории*/
-        toHistPrint = forReturn;
-        shouldPrint = true;
-
+        if (listener != null) {
+            listener.onHistoryUnitAdded(forReturn);
+        }
 
         /* Обуляем значения */
         clearSB();
@@ -177,10 +176,8 @@ public class CalculatorService {
     /**
      * Conversion HistoryUnit to String
      */
-
     private String unitToString(HistoryUnit unit) {
         return
-
                 unit.getInitVal() +
                         " " +
                         unit.getOperation().getSymbol() +
@@ -203,18 +200,6 @@ public class CalculatorService {
     public void onAppStop() {
         //выгрузка оставшихся записей из памяти в основную базу
         jcNt.uploadHistory(dbWorker.getData());
-    }
-
-    public boolean checkFin() {
-        return shouldPrint;
-    }
-
-    public void setShouldPringFalse() {
-        shouldPrint = false;
-    }
-
-    public String getStr() {
-        return (toHistPrint + "\n");
     }
 
 }

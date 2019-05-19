@@ -52,7 +52,7 @@ public class HistoryUnitDAO {
         }
     }
 
-    public Long getLastID() {
+    private Long getLastID() {
         String selectID = "SELECT id FROM HistoryUnit ORDER BY id DESC";
         try (Session currentSession = sessionFactory.openSession()){
             return (Long)currentSession.createQuery(selectID).setMaxResults(1).getSingleResult();

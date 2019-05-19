@@ -7,14 +7,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 import java.util.List;
 
-public class MainFXMLController {
+public class MainFXMLController implements UpdateHistoryListener {
 
-    private CalculatorService calculatorService = new CalculatorService();
+    private CalculatorService calculatorService = new CalculatorService(this);
 
     @FXML
     private TextArea historyWindow;
@@ -172,7 +171,8 @@ public class MainFXMLController {
     private void keyPressedEvent(KeyEvent event) {
         switch (event.getCode()) {
             case PERIOD:
-                pressButton(".");
+            case DECIMAL:
+                pressDot();
                 break;
             case DIGIT0:
             case NUMPAD0:
@@ -250,16 +250,19 @@ public class MainFXMLController {
     private void pressOperationButton(Operation operation) {
         String s = calculatorService.getInputValue(operation);
         display.setText(s);
-        if (calculatorService.checkFin()) {
-            historyWindow.appendText(calculatorService.getStr());
-            calculatorService.setShouldPringFalse();
-        }
+    }
+
+    private void pressDot() {
+        display.setText(calculatorService.processDot("."));
     }
 
     private void pressButton(String string) {
-        display.setText(calculatorService.getInputValue(string));
+        display.setText(calculatorService.processValue(string));
     }
 
-
+    @Override
+    public void onHistoryUnitAdded(String unit) {
+        historyWindow.appendText(unit + "\n");
+    }
 
 }

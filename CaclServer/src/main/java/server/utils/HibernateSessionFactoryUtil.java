@@ -5,7 +5,6 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import server.model.HistoryUnit;
 
-
 public class HibernateSessionFactoryUtil {
     public static final SessionFactory sessionFactory = getSessionFactory();
 
