@@ -16,7 +16,7 @@
       <TextArea fx:id="historyWindow" editable="false" layoutX="438.0" layoutY="65.0" prefHeight="396.0" prefWidth="312.0" />
       <Text layoutX="563.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Operations history" textAlignment="RIGHT" wrappingWidth="186.5927734375">
          <font>
-            <Font name="Berlin Sans FB" size="22.0" />
+            <Font name="Times New Roman" size="22.0" />
          </font>
       </Text>
       <TextField fx:id="display" alignment="CENTER_RIGHT" layoutX="21.0" layoutY="14.0" prefHeight="51.0" prefWidth="380.0">

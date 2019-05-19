@@ -30,8 +30,9 @@ public class StartClient extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        URL url = new File("CaclClient/src/main/resources/startClient.fxml").toURI().toURL();
-        Parent root = FXMLLoader.load(url);
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/startClient.fxml"));
+        Parent root = loader.load();
         Scene scene = new Scene(root);
 
         stage.setScene(scene);
