@@ -22,18 +22,15 @@ public class CalculatorService {
     private StringBuilder stringForCalc = new StringBuilder();
 
     private long idCount;
-    private long firstCount;
 
-    private boolean shouldPring = false;
+    private boolean shouldPrint = false;
     private String toHistPrint;
 
     public void onAppStart() {
         /* Create inmemoryDB */
         dbWorker.createTable();
-        //Присвоение значений счетчикам
-        idCount = jcNt.getLastID() + 1;
-        firstCount = idCount;
     }
+
 
     /**
      * Load history from server DB & convert to List<String>
@@ -91,7 +88,7 @@ public class CalculatorService {
             unitForCalc.setOperation(operation);
             return buildString("");
         } else if (operation.equals(Operation.EQUAL)) {
-            if (unitForCalc.getOpVal() == null && unitForCalc.getOperation() == null) {
+            if (unitForCalc.getOpVal() == null && unitForCalc.getOperation() == null)  {
                 unitForCalc.setOperation(null);
                 System.out.println("метод для многократного нажатия равно");
                 return buildString("");
@@ -112,14 +109,11 @@ public class CalculatorService {
             return stringForCalc.append(string).toString();
         } else return (
                 unitForCalc.getInitVal().toString() +
-                        unitForCalc.getOperation().getSymbol() +
-                        stringForCalc.append(string).toString());
+                unitForCalc.getOperation().getSymbol() +
+                stringForCalc.append(string).toString());
     }
 
     private String calculate() {
-        //Ставим ID
-        unitForCalc.setId(idCount);
-
         //Произвести рассчет
         try {
             unitForCalc.setFinVal(calculator.calculate(unitForCalc));
@@ -136,22 +130,28 @@ public class CalculatorService {
         idCount++;
 
         //Выгрузка записей в основную базу в случае, если в памяти их больше пятидесяти.
-        if (idCount - firstCount > 50) {
+        if (idCount > 20) {
             jcNt.uploadHistory(dbWorker.getData());
-            dbWorker.clearData(firstCount, idCount);
-            firstCount = idCount;
+            dbWorker.clearData(idCount);
+            idCount = 0;
         }
 
+        /* Сохраняем стринг для печати на экран */
         String forReturn = unitToString(unitForCalc);
-        toHistPrint = forReturn;
-        shouldPring = true;
 
+        /* А вот тут костыль для вывода печати в поле истории*/
+        toHistPrint = forReturn;
+        shouldPrint = true;
+
+
+        /* Обуляем значения */
         clearSB();
         unitForCalc.setInitVal(unitForCalc.getFinVal());
         unitForCalc.setOperation(null);
         unitForCalc.setOpVal(null);
         unitForCalc.setFinVal(null);
 
+        /* Возвращаем строку для печати */
         return forReturn;
     }
 
@@ -180,6 +180,7 @@ public class CalculatorService {
 
     private String unitToString(HistoryUnit unit) {
         return
+
                 unit.getInitVal() +
                         " " +
                         unit.getOperation().getSymbol() +
@@ -205,11 +206,11 @@ public class CalculatorService {
     }
 
     public boolean checkFin() {
-        return shouldPring;
+        return shouldPrint;
     }
 
     public void setShouldPringFalse() {
-        shouldPring = false;
+        shouldPrint = false;
     }
 
     public String getStr() {

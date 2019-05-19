@@ -11,7 +11,7 @@ public class HistoryUnit implements Serializable {
     private static final long serialVersionUID = -7049957706738879274L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name="id", unique=true, nullable=false)
     private Long id;
 

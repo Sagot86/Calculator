@@ -20,7 +20,7 @@ public class H2DBWorker implements H2DBConnector {
             " op_value DECIMAL(20,6), " +
             " fin_value DECIMAL(20,6)) ";
     private static final String GET_DATA = "SELECT id, init_value, operation, op_value, fin_value FROM history_data";
-    private static final String SAVE_DATA = "INSERT INTO history_data (id, init_value, operation, op_value, fin_value) VALUES (?, ?, ?, ?, ?)";
+    private static final String SAVE_DATA = "INSERT INTO history_data (init_value, operation, op_value, fin_value) VALUES (?, ?, ?, ?)";
     private static final String CLEAR_DATA = "DELETE FROM history_data WHERE id BETWEEN ? AND ?";
 
     public void createTable() {
@@ -65,11 +65,10 @@ public class H2DBWorker implements H2DBConnector {
 
              PreparedStatement pstmnt = connection.prepareStatement(SAVE_DATA)) {
 
-            pstmnt.setLong(1, historyUnit.getId());
-            pstmnt.setBigDecimal(2, historyUnit.getInitVal());
-            pstmnt.setString(3, historyUnit.getOperation().toString());
-            pstmnt.setBigDecimal(4, historyUnit.getOpVal());
-            pstmnt.setBigDecimal(5, historyUnit.getFinVal());
+            pstmnt.setBigDecimal(1, historyUnit.getInitVal());
+            pstmnt.setString(2, historyUnit.getOperation().toString());
+            pstmnt.setBigDecimal(3, historyUnit.getOpVal());
+            pstmnt.setBigDecimal(4, historyUnit.getFinVal());
             pstmnt.addBatch();
             pstmnt.executeBatch();
 
@@ -78,10 +77,10 @@ public class H2DBWorker implements H2DBConnector {
         }
     }
 
-    public void clearData(long startID, long endID) {
+    public void clearData(long endID) {
         try (Connection connection = connectToDB();
              PreparedStatement pstmnt = connection.prepareStatement(CLEAR_DATA)) {
-            pstmnt.setLong(1, startID);
+            pstmnt.setLong(1, 1);
             pstmnt.setLong(2, endID);
             pstmnt.addBatch();
             pstmnt.executeBatch();
