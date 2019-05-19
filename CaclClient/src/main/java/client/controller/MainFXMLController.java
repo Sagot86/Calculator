@@ -76,108 +76,82 @@ public class MainFXMLController {
 
     @FXML
     private void pressDot(ActionEvent event) {
-        display.setText(calculatorService.getInputValue("."));
+        pressButton(".");
     }
 
     @FXML
     private void pressZero(ActionEvent event) {
-        display.setText(calculatorService.getInputValue("0"));
+        pressButton("0");
     }
 
     @FXML
     private void pressOne(ActionEvent event) {
-        display.setText(calculatorService.getInputValue("1"));
+        pressButton("1");
     }
 
     @FXML
     private void pressTwo(ActionEvent event) {
-        display.setText(calculatorService.getInputValue("2"));
+        pressButton("2");
     }
 
     @FXML
     private void pressThree(ActionEvent event) {
-        display.setText(calculatorService.getInputValue("3"));
+        pressButton("3");
     }
 
     @FXML
     private void pressFour(ActionEvent event) {
-        display.setText(calculatorService.getInputValue("4"));
+        pressButton("4");
     }
 
     @FXML
     private void pressFive(ActionEvent event) {
-        display.setText(calculatorService.getInputValue("5"));
+        pressButton("5");
     }
 
     @FXML
     private void pressSix(ActionEvent event) {
-        display.setText(calculatorService.getInputValue("6"));
+        pressButton("6");
     }
 
     @FXML
     private void pressSeven(ActionEvent event) {
-        display.setText(calculatorService.getInputValue("7"));
+        pressButton("7");
     }
 
     @FXML
     private void pressEight(ActionEvent event) {
-        display.setText(calculatorService.getInputValue("8"));
+        pressButton("8");
     }
 
     @FXML
     private void pressNine(ActionEvent event) {
-        display.setText(calculatorService.getInputValue("9"));
+        pressButton("9");
     }
 
     @FXML
     private void pressDivide(ActionEvent event) {
-        String s = calculatorService.getInputValue(Operation.DIVISION);
-        display.setText(s);
-        if (calculatorService.checkFin()) {
-            historyWindow.appendText(calculatorService.getStr());
-            calculatorService.setShouldPringFalse();
-        }
+        pressOperationButton(Operation.DIVISION);
     }
 
     @FXML
     private void pressMult(ActionEvent event) {
-        String s = calculatorService.getInputValue(Operation.MULTIPLICATION);
-        display.setText(s);
-        if (calculatorService.checkFin()) {
-            historyWindow.appendText(calculatorService.getStr());
-            calculatorService.setShouldPringFalse();
-        }
+        pressOperationButton(Operation.MULTIPLICATION);
     }
 
     @FXML
     private void pressSubt(ActionEvent event) {
-        String s = calculatorService.getInputValue(Operation.SUBTRACTION);
-        display.setText(s);
-        if (calculatorService.checkFin()) {
-            historyWindow.appendText(calculatorService.getStr());
-            calculatorService.setShouldPringFalse();
-        }
-
+        pressOperationButton(Operation.SUBTRACTION);
     }
 
     @FXML
     private void pressAdd(ActionEvent event) {
-        String s = calculatorService.getInputValue(Operation.ADDITION);
-        display.setText(s);
-        if (calculatorService.checkFin()) {
-            historyWindow.appendText(calculatorService.getStr());
-            calculatorService.setShouldPringFalse();
-        }
+        pressOperationButton(Operation.ADDITION);
     }
 
     @FXML
     private void pressEqual(ActionEvent event) {
-        String s = calculatorService.getInputValue(Operation.EQUAL);
-        display.setText(s);
-        if (calculatorService.checkFin()) {
-            historyWindow.appendText(calculatorService.getStr());
-            calculatorService.setShouldPringFalse();
-        }
+        pressOperationButton(Operation.EQUAL);
     }
 
     @FXML
@@ -194,11 +168,27 @@ public class MainFXMLController {
 
     @FXML
     private void initialize() {
+        /* Печать истории из базы */
         List<String> toPrint = calculatorService.getHistory();
         for (String string : toPrint) {
             historyWindow.appendText(string + "\n");
         }
+
+        /* Установка начального значения дисплея */
         display.setText("0");
+    }
+
+    private void pressOperationButton(Operation operation) {
+        String s = calculatorService.getInputValue(operation);
+        display.setText(s);
+        if (calculatorService.checkFin()) {
+            historyWindow.appendText(calculatorService.getStr());
+            calculatorService.setShouldPringFalse();
+        }
+    }
+
+    private void pressButton(String string) {
+        display.setText(calculatorService.getInputValue(string));
     }
 
 }

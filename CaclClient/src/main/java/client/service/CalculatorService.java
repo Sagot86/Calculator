@@ -91,8 +91,9 @@ public class CalculatorService {
             unitForCalc.setOperation(operation);
             return buildString("");
         } else if (operation.equals(Operation.EQUAL)) {
-            if (unitForCalc.getOpVal() == null && stringForCalc.length() == 0) {
+            if (unitForCalc.getOpVal() == null && unitForCalc.getOperation() == null) {
                 unitForCalc.setOperation(null);
+                System.out.println("метод для многократного нажатия равно");
                 return buildString("");
             } else {
                 System.out.println("Пришедшая операция - равно");

@@ -14,7 +14,7 @@ import java.util.List;
 public class H2DBWorker implements H2DBConnector {
 
     private static final String CREATE_TABLE = "CREATE TABLE history_data " +
-            "(id INTEGER not NULL PRIMARY KEY, " +
+            "(id INTEGER not NULL PRIMARY KEY auto_increment, " +
             " init_value DECIMAL(20,6), " +
             " operation VARCHAR(50), " +
             " op_value DECIMAL(20,6), " +
