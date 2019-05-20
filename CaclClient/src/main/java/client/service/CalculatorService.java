@@ -34,6 +34,7 @@ public class CalculatorService {
 
     private BigDecimal getNumberFromInput() {
         return new BigDecimal(stringForCalc.toString());
+
     }
 
 
@@ -105,7 +106,10 @@ public class CalculatorService {
                     unitForCalc.setOperation(operationIn);
                     if (!inputIsEmpty()) {
                         unitForCalc.setOpVal(getNumberFromInput());
-                        calculate();
+                        /* да, костыль */
+                        if (calculate().equals("Слишком длинное число!")) {
+                            return "Слишком длинное число!";
+                        }
                         unitForCalc.setOperation(operationIn);
                     }
                     return buildString(str);
@@ -113,6 +117,7 @@ public class CalculatorService {
             }
         }
     }
+
 
     private String buildString(String string) {
         if (unitForCalc.getOperation() == null) {
@@ -123,13 +128,21 @@ public class CalculatorService {
     }
 
     private String calculate() {
-        //Произвести рассчет
+        /* Произвести рассчет */
         try {
             unitForCalc.setFinVal(calculator.calculate(unitForCalc));
         } catch (ArithmeticException ex) {
             clearUnitForCalc();
             clearSB();
             return "Здесь на ноль делить нельзя!";
+        }
+
+        if (unitForCalc.getFinVal().toString().length() >= 20) {
+            clearSB();
+            unitForCalc.setOperation(null);
+            unitForCalc.setOpVal(null);
+            unitForCalc.setFinVal(null);
+            return "Слишком длинное число!";
         }
 
         //Сохраняем значение unitForCalc в DB
