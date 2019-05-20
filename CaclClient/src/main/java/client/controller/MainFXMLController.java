@@ -250,7 +250,7 @@ public class MainFXMLController implements UpdateHistoryListener {
     }
 
     private void pressOperationButton(Operation operation) {
-        String s = calculatorService.getInputValue(operation);
+        String s = calculatorService.processingPressOperation(operation);
         display.setText(s);
     }
 
