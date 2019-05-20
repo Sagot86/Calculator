@@ -24,10 +24,6 @@ public class CalculatorService {
         return unitForCalc.getInitVal();
     }
 
-    private BigDecimal secondValue() {
-        return unitForCalc.getOpVal();
-    }
-
     private Operation currentOperation() {
         return unitForCalc.getOperation();
     }
@@ -65,132 +61,57 @@ public class CalculatorService {
     /**
      * Обработка в случае нажатия символа операции
      */
-    public String getInputValue(Operation operation) {
-        if (operation.equals(Operation.EQUAL)) {
-            if ((currentOperation() == null) || (currentOperation() != null && firstValue() == null)) {
-                if (!inputIsEmpty()) {
-                    return buildString("");
-                } else return "0";
-            } else if (!inputIsEmpty()) {
-                unitForCalc.setOpVal(getNumberFromInput());
-                return calculate();
-            } else {
-                return firstValue().toString();
-            }
-        } else if (currentOperation() == null && !inputIsEmpty()) {
-            System.out.println("Операция не равно, поле операции еще не заполнено, символы уже вводились");
-            unitForCalc.setInitVal(getNumberFromInput());
-            unitForCalc.setOperation(operation);
-            clearSB();
-            return buildString("");
-        } else if (firstValue() == null && currentOperation() == null && inputIsEmpty()) {
-            System.out.println("Начальное значение не заполнено, поле операции еще не заполнено, символов еще не вводилось");
-            unitForCalc.setInitVal(BigDecimal.ZERO);
-            unitForCalc.setOperation(operation);
-            return buildString("");
-        } else if (firstValue() != null && secondValue() == null && inputIsEmpty()) {
-            System.out.println("Начальное значение уже есть, второго значения еще нет, символы еще не вводились");
-            unitForCalc.setOperation(operation);
-            return buildString("");
-        } else if (firstValue() != null && currentOperation() != null && secondValue() == null && !inputIsEmpty()) {
-            System.out.println("Начальное значение уже есть, поле операции уже заполнено, второго значения еще нет, символы уже вводились, знак не равно");
-            unitForCalc.setOpVal(getNumberFromInput());
-            calculate();
-            unitForCalc.setOperation(operation);
-            return buildString("");
-        } else {
-            System.out.println("Все остальное");
-            unitForCalc.setOperation(operation);
-            return buildString("");
-        }
-    }
-
-    public String processInOper(Operation operationIn) {
+    public String processingPressOperation(Operation operationIn) {
         String str = "";
 
         if (operationIn.equals(Operation.EQUAL)) {
-            System.out.println(" input operation is = ");
             if (firstValue() == null) {
-                System.out.println(" input operation is =, fv == null ");
                 if (inputIsEmpty()) {
-                    System.out.println(" input operation is =, fv == null, input is empty ");
                     str = "0";
-                    return buildString(str);
                 }
-                System.out.println(" input operation is =, fv == null, input is not empty ");
                 return buildString(str);
-            } if (currentOperation() == null) {
-                System.out.println("input operation is =, fv != null, operation == null ");
+            }
+            if (currentOperation() == null) {
                 if (inputIsEmpty()) {
-                    System.out.println("input operation is =, fv != null, operation == null, input is empty ");
-                    str = "0";
-                    return buildString(str);
-                } return buildString(str);
-            } if (inputIsEmpty()) {
-                System.out.println(" input operation is =, fv != null, operation != null, input is empty ");
+                    return firstValue().toString();
+                }
+                return buildString(str);
+            }
+            if (inputIsEmpty()) {
                 return firstValue().toString();
             } else {
-                System.out.println(" input operation is =, fv != null, operation != null, input is not empty ");
                 unitForCalc.setOpVal(getNumberFromInput());
                 return calculate();
             }
         } else {
-            System.out.println(" input is not = ");
             if (firstValue() == null) {
-                System.out.println(" fv == null");
+                unitForCalc.setOperation(operationIn);
                 if (inputIsEmpty()) {
-                    System.out.println(" fv == null, input is empty ");
                     unitForCalc.setInitVal(BigDecimal.ZERO);
-                    unitForCalc.setOperation(operationIn);
-                    return buildString(str);
                 } else {
-                    System.out.println(" fv == null, input is not empty ");
                     unitForCalc.setInitVal(getNumberFromInput());
-                    unitForCalc.setOperation(operationIn);
                     clearSB();
-                    return buildString(str);
                 }
+                return buildString(str);
             } else {
-                System.out.println(" fv != null ");
                 if (currentOperation() == null) {
-                    System.out.println(" fv != null, operation == null ");
-                    if (inputIsEmpty()) {
-                        System.out.println(" fv != null, operation == null, input is empty ");
-                        unitForCalc.setOperation(operationIn);
-                        return buildString(str);
-                    } else {
-                        System.out.println(" fv != null, operation == null, input is not empty ");
+                    unitForCalc.setOperation(operationIn);
+                    if (!inputIsEmpty()) {
                         unitForCalc.setInitVal(getNumberFromInput());
-                        unitForCalc.setOperation(operationIn);
                         clearSB();
-                        return buildString(str);
                     }
+                    return buildString(str);
                 } else {
-                    System.out.println(" fv != null, operation != null ");
-                    if (inputIsEmpty()) {
-                        System.out.println(" fv != null, operation != null, input is empty ");
-                        unitForCalc.setOperation(operationIn);
-                        return buildString(str);
-                    } else {
-                        System.out.println(" fv != null, operation != null, input is not empty ");
+                    unitForCalc.setOperation(operationIn);
+                    if (!inputIsEmpty()) {
                         unitForCalc.setOpVal(getNumberFromInput());
                         calculate();
                         unitForCalc.setOperation(operationIn);
-                        return buildString(str);
                     }
+                    return buildString(str);
                 }
             }
         }
-    }
-
-    private String upgradedBS(String string) {
-        if (unitForCalc.getOperation() == null) {
-            if (firstValue() != null) {
-                return unitForCalc.getInitVal().toString() + stringForCalc.append(string).toString();
-            } else return stringForCalc.append(string).toString();
-        } else return (unitForCalc.getInitVal().toString() +
-                unitForCalc.getOperation().getSymbol() +
-                stringForCalc.append(string).toString());
     }
 
     private String buildString(String string) {
