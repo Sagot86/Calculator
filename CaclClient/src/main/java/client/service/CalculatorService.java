@@ -24,10 +24,6 @@ public class CalculatorService {
         return unitForCalc.getInitVal();
     }
 
-    private BigDecimal secondValue() {
-        return unitForCalc.getOpVal();
-    }
-
     private Operation currentOperation() {
         return unitForCalc.getOperation();
     }
@@ -36,15 +32,16 @@ public class CalculatorService {
         return stringForCalc.length() == 0;
     }
 
-    private BigDecimal getNumberFromInpit() {
+    private BigDecimal getNumberFromInput() {
         return new BigDecimal(stringForCalc.toString());
     }
+
 
     /**
      * Обработка в случае нажатия цифры или точки
      */
     public String processValue(String s) {
-            return buildString(s);
+        return buildString(s);
     }
 
     /**
@@ -64,47 +61,63 @@ public class CalculatorService {
     /**
      * Обработка в случае нажатия символа операции
      */
-    public String getInputValue(Operation operation) {
-        if (!operation.equals(Operation.EQUAL) && currentOperation() == null && !inputIsEmpty()) {
-            System.out.println("Операция не равно, поле операции еще не заполнено, символы уже вводились");
-            unitForCalc.setInitVal(getNumberFromInpit());
-            unitForCalc.setOperation(operation);
-            clearSB();
-            return buildString("");
-        } else if (firstValue() == null && currentOperation() == null && inputIsEmpty()) {
-            System.out.println("Начальное значение не заполнено, поле операции еще не заполнено, символов еще не вводилось");
-            unitForCalc.setInitVal(BigDecimal.ZERO);
-            unitForCalc.setOperation(operation);
-            return buildString("");
-        } else if (firstValue() != null && currentOperation() == null && inputIsEmpty()) {
-            System.out.println("Начальное значение уже есть, второго значения еще нет, символы еще не вводились");
-            unitForCalc.setOperation(operation);
-            return buildString("");
-        } else if (!operation.equals(Operation.EQUAL) && firstValue() != null && currentOperation() != null && secondValue() == null && !inputIsEmpty()) {
-            System.out.println("Начальное значение уже есть, поле операции уже заполнено, второго значения еще нет, символы уже вводились, знак не равно");
-            unitForCalc.setOpVal(getNumberFromInpit());
-            calculate();
-            unitForCalc.setOperation(operation);
-            return buildString("");
-        } else if (operation.equals(Operation.EQUAL)) {
-            if (secondValue() == null && currentOperation() == null) {
-                unitForCalc.setOperation(null);
-                System.out.println("метод для многократного нажатия равно");
-                return buildString("");
+    public String processingPressOperation(Operation operationIn) {
+        String str = "";
+
+        if (operationIn.equals(Operation.EQUAL)) {
+            if (firstValue() == null) {
+                if (inputIsEmpty()) {
+                    str = "0";
+                }
+                return buildString(str);
+            }
+            if (currentOperation() == null) {
+                if (inputIsEmpty()) {
+                    return firstValue().toString();
+                }
+                return buildString(str);
+            }
+            if (inputIsEmpty()) {
+                return firstValue().toString();
             } else {
-                System.out.println("Пришедшая операция - равно");
-                unitForCalc.setOpVal(getNumberFromInpit());
+                unitForCalc.setOpVal(getNumberFromInput());
                 return calculate();
             }
+        } else {
+            if (firstValue() == null) {
+                unitForCalc.setOperation(operationIn);
+                if (inputIsEmpty()) {
+                    unitForCalc.setInitVal(BigDecimal.ZERO);
+                } else {
+                    unitForCalc.setInitVal(getNumberFromInput());
+                    clearSB();
+                }
+                return buildString(str);
+            } else {
+                if (currentOperation() == null) {
+                    unitForCalc.setOperation(operationIn);
+                    if (!inputIsEmpty()) {
+                        unitForCalc.setInitVal(getNumberFromInput());
+                        clearSB();
+                    }
+                    return buildString(str);
+                } else {
+                    unitForCalc.setOperation(operationIn);
+                    if (!inputIsEmpty()) {
+                        unitForCalc.setOpVal(getNumberFromInput());
+                        calculate();
+                        unitForCalc.setOperation(operationIn);
+                    }
+                    return buildString(str);
+                }
+            }
         }
-        return null;
     }
 
     private String buildString(String string) {
         if (unitForCalc.getOperation() == null) {
             return stringForCalc.append(string).toString();
-        } else return (
-                unitForCalc.getInitVal().toString() +
+        } else return (unitForCalc.getInitVal().toString() +
                 unitForCalc.getOperation().getSymbol() +
                 stringForCalc.append(string).toString());
     }
