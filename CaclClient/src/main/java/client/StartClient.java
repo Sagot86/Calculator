@@ -1,20 +1,17 @@
 package client;
 
-import client.service.CalculatorService;
+import client.service.DataTransferService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.net.URL;
-
 
 public class StartClient extends Application {
 
     /** ужасно, переделать позже */
-    private CalculatorService service = new CalculatorService(null);
+    private DataTransferService service = new DataTransferService();
 
     public static void main(String[] args) {
         StartClient.launch(args);

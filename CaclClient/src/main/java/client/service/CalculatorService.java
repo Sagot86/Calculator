@@ -1,44 +1,23 @@
 package client.service;
 
 import client.controller.UpdateHistoryListener;
-import client.dao.H2DBWorker;
 import client.model.Calculator;
 import client.model.HistoryUnit;
-import client.model.JsonConverterNTransporter;
 import client.model.Operation;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CalculatorService {
 
-    private final H2DBWorker dbWorker = new H2DBWorker();
-    private final JsonConverterNTransporter jcNt = new JsonConverterNTransporter();
+    private DataTransferService dts = new DataTransferService();
     private final Calculator calculator = new Calculator();
     private final UpdateHistoryListener listener;
 
     private final HistoryUnit unitForCalc = new HistoryUnit();
     private StringBuilder stringForCalc = new StringBuilder();
 
-    private long idCount;
-
     public CalculatorService(UpdateHistoryListener listener) {
         this.listener = listener;
-    }
-
-    public void onAppStart() {
-        /* Create inmemoryDB */
-        dbWorker.createTable();
-    }
-
-
-    /**
-     * Load history from server DB & convert to List<String>
-     */
-    public List<String> getHistory() {
-        List<HistoryUnit> history = jcNt.loadHistory();
-        return unitToString(history);
     }
 
     /**
@@ -124,19 +103,9 @@ public class CalculatorService {
         }
 
         //Сохраняем значение unitForCalc в DB
-        dbWorker.saveData(unitForCalc);
+        dts.saveToDB(unitForCalc);
 
-        //Increment count
-        idCount++;
-
-        //Выгрузка записей в основную базу в случае, если в памяти их больше тридцати.
-        if (idCount > 30) {
-            jcNt.uploadHistory(dbWorker.getData());
-            dbWorker.clearData(idCount);
-            idCount = 0;
-        }
-
-        /* Сохраняем стринг для печати на экран */
+        /* Сохраняем строку для печати на экран */
         String forReturn = unitToString(unitForCalc);
 
         if (listener != null) {
@@ -152,25 +121,6 @@ public class CalculatorService {
 
         /* Возвращаем строку для печати */
         return forReturn;
-    }
-
-    /**
-     * Conversion List<HistoryUnit> to List<String>
-     */
-    private List<String> unitToString(List<HistoryUnit> units) {
-        List<String> testList = new ArrayList<>();
-        for (HistoryUnit unit : units) {
-            testList.add(
-                    unit.getInitVal() +
-                            " " +
-                            unit.getOperation().getSymbol() +
-                            " " +
-                            unit.getOpVal() +
-                            " = " +
-                            unit.getFinVal()
-            );
-        }
-        return testList;
     }
 
     /**
@@ -196,10 +146,4 @@ public class CalculatorService {
         unitForCalc.setOperation(null);
         unitForCalc.setOpVal(null);
     }
-
-    public void onAppStop() {
-        //выгрузка оставшихся записей из памяти в основную базу
-        jcNt.uploadHistory(dbWorker.getData());
-    }
-
 }

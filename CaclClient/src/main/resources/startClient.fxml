@@ -11,7 +11,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane onKeyReleased="#keyPressedEvent" prefHeight="500.0" prefWidth="769.0" style="-fx-background-color: EAE1D4;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.MainFXMLController">
+<AnchorPane onKeyReleased="#keyPressedEvent" prefHeight="500.0" prefWidth="769.0" style="-fx-background-color: EAE1D4;" xmlns="http://javafx.com/javafx/8.0.211" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.MainFXMLController">
    <children>
       <TextArea fx:id="historyWindow" editable="false" layoutX="438.0" layoutY="65.0" prefHeight="396.0" prefWidth="312.0" />
       <Text layoutX="563.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Operations history" textAlignment="RIGHT" wrappingWidth="186.5927734375">

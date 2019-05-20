@@ -2,6 +2,7 @@ package client.controller;
 
 import client.model.Operation;
 import client.service.CalculatorService;
+import client.service.DataTransferService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -14,6 +15,7 @@ import java.util.List;
 public class MainFXMLController implements UpdateHistoryListener {
 
     private CalculatorService calculatorService = new CalculatorService(this);
+    private DataTransferService dts = new DataTransferService();
 
     @FXML
     private TextArea historyWindow;
@@ -238,7 +240,7 @@ public class MainFXMLController implements UpdateHistoryListener {
     @FXML
     private void initialize() {
         /* Печать истории из базы */
-        List<String> toPrint = calculatorService.getHistory();
+        List<String> toPrint = dts.getHistory();
         for (String string : toPrint) {
             historyWindow.appendText(string + "\n");
         }
