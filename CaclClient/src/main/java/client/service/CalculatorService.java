@@ -20,6 +20,26 @@ public class CalculatorService {
         this.listener = listener;
     }
 
+    private BigDecimal firstValue() {
+        return unitForCalc.getInitVal();
+    }
+
+    private BigDecimal secondValue() {
+        return unitForCalc.getOpVal();
+    }
+
+    private Operation currentOperation() {
+        return unitForCalc.getOperation();
+    }
+
+    private boolean inputIsEmpty() {
+        return stringForCalc.length() == 0;
+    }
+
+    private BigDecimal getNumberFromInpit() {
+        return new BigDecimal(stringForCalc.toString());
+    }
+
     /**
      * Обработка в случае нажатия цифры или точки
      */
@@ -45,42 +65,39 @@ public class CalculatorService {
      * Обработка в случае нажатия символа операции
      */
     public String getInputValue(Operation operation) {
-        if (!operation.equals(Operation.EQUAL) && unitForCalc.getOperation() == null && stringForCalc.length() > 0) {
+        if (!operation.equals(Operation.EQUAL) && currentOperation() == null && !inputIsEmpty()) {
             System.out.println("Операция не равно, поле операции еще не заполнено, символы уже вводились");
-            unitForCalc.setInitVal(new BigDecimal(stringForCalc.toString()));
+            unitForCalc.setInitVal(getNumberFromInpit());
             unitForCalc.setOperation(operation);
             clearSB();
             return buildString("");
-        } else if (unitForCalc.getInitVal() == null && unitForCalc.getOperation() == null && stringForCalc.length() == 0) {
+        } else if (firstValue() == null && currentOperation() == null && inputIsEmpty()) {
             System.out.println("Начальное значение не заполнено, поле операции еще не заполнено, символов еще не вводилось");
             unitForCalc.setInitVal(BigDecimal.ZERO);
             unitForCalc.setOperation(operation);
             return buildString("");
-        } else if (unitForCalc.getInitVal() != null && unitForCalc.getOpVal() == null && stringForCalc.length() == 0) {
+        } else if (firstValue() != null && currentOperation() == null && inputIsEmpty()) {
             System.out.println("Начальное значение уже есть, второго значения еще нет, символы еще не вводились");
             unitForCalc.setOperation(operation);
             return buildString("");
-        } else if (!operation.equals(Operation.EQUAL) && unitForCalc.getInitVal() != null && unitForCalc.getOperation() != null && unitForCalc.getOpVal() == null && stringForCalc.length() > 0) {
+        } else if (!operation.equals(Operation.EQUAL) && firstValue() != null && currentOperation() != null && secondValue() == null && !inputIsEmpty()) {
             System.out.println("Начальное значение уже есть, поле операции уже заполнено, второго значения еще нет, символы уже вводились, знак не равно");
-            unitForCalc.setOpVal(new BigDecimal(stringForCalc.toString()));
+            unitForCalc.setOpVal(getNumberFromInpit());
             calculate();
             unitForCalc.setOperation(operation);
             return buildString("");
         } else if (operation.equals(Operation.EQUAL)) {
-            if (unitForCalc.getOpVal() == null && unitForCalc.getOperation() == null)  {
+            if (secondValue() == null && currentOperation() == null) {
                 unitForCalc.setOperation(null);
                 System.out.println("метод для многократного нажатия равно");
                 return buildString("");
             } else {
                 System.out.println("Пришедшая операция - равно");
-                unitForCalc.setOpVal(new BigDecimal(stringForCalc.toString()));
+                unitForCalc.setOpVal(getNumberFromInpit());
                 return calculate();
             }
-        } else {
-            System.out.println("Все остальное");
-            unitForCalc.setOperation(operation);
-            return buildString("");
         }
+        return null;
     }
 
     private String buildString(String string) {
