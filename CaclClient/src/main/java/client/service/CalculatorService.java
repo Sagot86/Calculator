@@ -107,8 +107,8 @@ public class CalculatorService {
                     if (!inputIsEmpty()) {
                         unitForCalc.setOpVal(getNumberFromInput());
                         /* да, костыль */
-                        if (calculate().equals("Слишком длинное число!")) {
-                            return "Слишком длинное число!";
+                        if (calculate().equals("Number is too long!")) {
+                            return "Number is too long!";
                         }
                         unitForCalc.setOperation(operationIn);
                     }
@@ -128,25 +128,27 @@ public class CalculatorService {
     }
 
     private String calculate() {
+
         /* Произвести рассчет */
         try {
             unitForCalc.setFinVal(calculator.calculate(unitForCalc));
         } catch (ArithmeticException ex) {
             clearUnitForCalc();
             clearSB();
-            return "Здесь на ноль делить нельзя!";
+            return "There is no divide on zero here ;)";
         }
 
-        if (unitForCalc.getFinVal().toString().length() >= 20) {
+        if (NumTooLong(unitForCalc.getFinVal()) || NumTooLong(unitForCalc.getInitVal()) || NumTooLong(unitForCalc.getOpVal())) {
             clearSB();
+            System.out.println();
             unitForCalc.setOperation(null);
             unitForCalc.setOpVal(null);
             unitForCalc.setFinVal(null);
-            return "Слишком длинное число!";
+            return "Number is too long!";
+        } else {
+            //Сохраняем значение unitForCalc в DB
+            dts.saveToDB(unitForCalc);
         }
-
-        //Сохраняем значение unitForCalc в DB
-        dts.saveToDB(unitForCalc);
 
         /* Сохраняем строку для печати на экран */
         String forReturn = unitToString(unitForCalc);
@@ -157,13 +159,19 @@ public class CalculatorService {
 
         /* Обуляем значения */
         clearSB();
-        unitForCalc.setInitVal(unitForCalc.getFinVal());
+        if (!NumTooLong(unitForCalc.getFinVal())) unitForCalc.setInitVal(unitForCalc.getFinVal());
         unitForCalc.setOperation(null);
         unitForCalc.setOpVal(null);
         unitForCalc.setFinVal(null);
 
         /* Возвращаем строку для печати */
         return forReturn;
+    }
+
+    private boolean NumTooLong(BigDecimal num) {
+        if (stringForCalc.indexOf(".") == -1) {
+            return num.toString().length() >= 14 ;
+        } else return (stringForCalc.indexOf(".") < 14);
     }
 
     /**
